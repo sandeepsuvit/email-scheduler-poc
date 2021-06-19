@@ -20,7 +20,8 @@ The following guides illustrate how to use some features concretely:
 * [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
 * [Building REST services with Spring](https://spring.io/guides/tutorials/bookmarks/)
 
-### Quartz
+### Quartz Resources
 
+* https://docs.spring.io/spring-boot/docs/2.5.1/reference/html/features.html#features.quartz
 * https://www.callicoder.com/spring-boot-quartz-scheduler-email-scheduling-example/
 * https://www.tutorialsbuddy.com/quartz-with-spring-boot-and-mysql-example

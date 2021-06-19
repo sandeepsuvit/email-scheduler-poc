@@ -15,8 +15,8 @@ import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.needle.dtos.EmailRequest;
-import com.needle.dtos.EmailResponse;
+import com.needle.dtos.email.EmailRequest;
+import com.needle.dtos.email.EmailResponse;
 import com.needle.job.EmaillSchedulerJob;
 import com.needle.service.EmailSchedulerService;
 

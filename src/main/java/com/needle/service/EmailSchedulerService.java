@@ -2,8 +2,8 @@ package com.needle.service;
 
 import org.quartz.SchedulerException;
 
-import com.needle.dtos.EmailRequest;
-import com.needle.dtos.EmailResponse;
+import com.needle.dtos.email.EmailRequest;
+import com.needle.dtos.email.EmailResponse;
 
 public interface EmailSchedulerService {
 	/**
