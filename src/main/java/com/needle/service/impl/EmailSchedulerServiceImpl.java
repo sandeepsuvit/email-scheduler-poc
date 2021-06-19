@@ -90,7 +90,8 @@ public class EmailSchedulerServiceImpl implements EmailSchedulerService {
 	}
 
 	/**
-	 * A scheduled object should have a trigger associated with a job detail
+	 * A scheduled object should have a trigger associated with a job detail.
+	 * Trigger is where we define the specific properties or behavior of the job.
 	 * 
 	 * Build job trigger
 	 * 
@@ -104,8 +105,8 @@ public class EmailSchedulerServiceImpl implements EmailSchedulerService {
                 .forJob(jobDetail)
                 .withIdentity(jobDetail.getKey().getName(), TRIGGER_GROUP)
                 .withDescription("Send Email Trigger")
-                .startAt(Date.from(startAt.toInstant()))
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withMisfireHandlingInstructionFireNow())
+                .startAt(Date.from(startAt.toInstant())) // When to start the trigger
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withMisfireHandlingInstructionFireNow()) // Schedule to run the trigger
                 .build();
 		// @formatter:on
 	}
