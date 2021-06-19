@@ -25,3 +25,32 @@ The following guides illustrate how to use some features concretely:
 * https://docs.spring.io/spring-boot/docs/2.5.1/reference/html/features.html#features.quartz
 * https://www.callicoder.com/spring-boot-quartz-scheduler-email-scheduling-example/
 * https://www.tutorialsbuddy.com/quartz-with-spring-boot-and-mysql-example
+* https://www.baeldung.com/spring-quartz-schedule
+* https://medium.com/@ChamithKodikara/spring-boot-2-quartz-2-scheduler-integration-a8eaaf850805
+
+### Usage
+
+- To schedule an email job trigger a POST to `http://localhost:8080/emails/schedule` with the following payload
+
+```json
+{
+    "email": "jhon@mail.com",
+    "subject": "Testing email schedule",
+    "body": "Hi Jhon this is a test message",
+    "deliverOn": "2021-06-19T21:21:00",
+    "timeZone": "Asia/Kolkata"
+}
+```
+
+**Note:** The field `deliverOn` denotes when the email needs to be triggered.
+
+- To schedule a message job trigger a POST to `http://localhost:8080/messsags/schedule` with he following payload
+
+```json
+{
+    "content": "This is a test message",
+    "makeVisibleAt": "2021-06-19T21:24:00"
+}
+```
+
+- At any point in time if you need to unschedule a scheduled message trigger a DELETE to `http://localhost:8080/messages/{messageId}/unschedule` where `messageId` is the primary key of the message stored in the db.

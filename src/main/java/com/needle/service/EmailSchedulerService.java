@@ -3,7 +3,7 @@ package com.needle.service;
 import org.quartz.SchedulerException;
 
 import com.needle.dtos.email.EmailRequest;
-import com.needle.dtos.email.EmailResponse;
+import com.needle.dtos.email.BaseResponse;
 
 public interface EmailSchedulerService {
 	/**
@@ -13,5 +13,5 @@ public interface EmailSchedulerService {
 	 * @return
 	 * @throws SchedulerException
 	 */
-	EmailResponse shceduleJob(EmailRequest request) throws SchedulerException;
+	BaseResponse schedule(EmailRequest request) throws SchedulerException;
 }

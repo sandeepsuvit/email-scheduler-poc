@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.needle.dtos.email.EmailRequest;
-import com.needle.dtos.email.EmailResponse;
+import com.needle.dtos.email.BaseResponse;
 import com.needle.job.EmaillSchedulerJob;
 import com.needle.service.EmailSchedulerService;
 
@@ -32,8 +32,8 @@ public class EmailSchedulerServiceImpl implements EmailSchedulerService {
 	private Scheduler scheduler;
 
 	@Override
-	public EmailResponse shceduleJob(EmailRequest request) throws SchedulerException {
-		log.info("Entering method {} from class {}", "shceduleJob", this.getClass().getName());
+	public BaseResponse schedule(EmailRequest request) throws SchedulerException {
+		log.info("Entering method {} from class {}", "schedule", this.getClass().getName());
 		// Get the delivery time
 		ZonedDateTime deliveryTime = ZonedDateTime.of(request.getDeliverOn(), request.getTimeZone());
 
@@ -41,7 +41,7 @@ public class EmailSchedulerServiceImpl implements EmailSchedulerService {
 		// the time zone
 		if (deliveryTime.isBefore(ZonedDateTime.now())) {
 			// @formatter:off
-			return EmailResponse.builder()
+			return BaseResponse.builder()
 					.success(false)
 					.message("Invalid delivery time specified")
 					.build();
@@ -53,9 +53,9 @@ public class EmailSchedulerServiceImpl implements EmailSchedulerService {
 
 		scheduler.scheduleJob(jobDetail, trigger);
 
-		log.info("Exiting method {} from class {}", "shceduleJob", this.getClass().getName());
+		log.info("Exiting method {} from class {}", "schedule", this.getClass().getName());
 		// @formatter:off
-        return EmailResponse.builder()
+        return BaseResponse.builder()
         		.success(true)
         		.jobId(jobDetail.getKey().getName())
         		.jobGroup(jobDetail.getKey().getGroup())
@@ -106,7 +106,10 @@ public class EmailSchedulerServiceImpl implements EmailSchedulerService {
                 .withIdentity(jobDetail.getKey().getName(), TRIGGER_GROUP)
                 .withDescription("Send Email Trigger")
                 .startAt(Date.from(startAt.toInstant())) // When to start the trigger
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withMisfireHandlingInstructionFireNow()) // Schedule to run the trigger
+                .withSchedule(
+                		SimpleScheduleBuilder
+                			.simpleSchedule()
+                			.withMisfireHandlingInstructionFireNow()) // Schedule to run the trigger
                 .build();
 		// @formatter:on
 	}

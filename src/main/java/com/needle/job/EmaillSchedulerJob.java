@@ -1,5 +1,6 @@
 package com.needle.job;
 
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -10,12 +11,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@DisallowConcurrentExecution
 public class EmaillSchedulerJob extends QuartzJobBean {
 
 	@Override
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-		log.info("Executing Job with key {}", context.getJobDetail().getKey());
+		log.info("Executing Email Job with key {}", context.getJobDetail().getKey());
 
+		// Get the job metadata information
 		JobDataMap jobDataMap = context.getMergedJobDataMap();
 		
 		String subject = jobDataMap.getString("subject");

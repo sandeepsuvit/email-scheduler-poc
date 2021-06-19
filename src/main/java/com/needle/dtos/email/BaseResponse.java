@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class EmailResponse {
+public class BaseResponse {
 	private boolean success;
 	private String jobId;
 	private String jobGroup;
