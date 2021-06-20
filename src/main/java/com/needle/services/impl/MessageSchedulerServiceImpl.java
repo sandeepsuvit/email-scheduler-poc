@@ -1,4 +1,4 @@
-package com.needle.service.impl;
+package com.needle.services.impl;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -21,9 +21,9 @@ import org.springframework.stereotype.Service;
 import com.needle.dtos.email.BaseResponse;
 import com.needle.dtos.message.MessageRequest;
 import com.needle.entities.Message;
-import com.needle.job.MessageSchedulerJob;
-import com.needle.repository.MessageRepository;
-import com.needle.service.MessageSchedulerService;
+import com.needle.jobs.MessageSchedulerJob;
+import com.needle.repositories.MessageRepository;
+import com.needle.services.MessageSchedulerService;
 
 import lombok.extern.slf4j.Slf4j;
 

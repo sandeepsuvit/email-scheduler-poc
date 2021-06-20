@@ -1,4 +1,4 @@
-package com.needle.job;
+package com.needle.jobs;
 
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;

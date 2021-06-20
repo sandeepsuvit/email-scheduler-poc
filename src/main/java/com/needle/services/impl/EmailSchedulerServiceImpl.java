@@ -1,4 +1,4 @@
-package com.needle.service.impl;
+package com.needle.services.impl;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.needle.dtos.email.EmailRequest;
+import com.needle.jobs.EmaillSchedulerJob;
+import com.needle.services.EmailSchedulerService;
 import com.needle.dtos.email.BaseResponse;
-import com.needle.job.EmaillSchedulerJob;
-import com.needle.service.EmailSchedulerService;
 
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,4 +1,4 @@
-package com.needle.repository;
+package com.needle.repositories;
 
 import java.util.UUID;
 
