@@ -27,7 +27,7 @@ public class EmailShcedulerServiceImpl extends AbstractJobBuilder implements Ema
 
 	@Autowired
 	public EmailShcedulerServiceImpl(Scheduler scheduler) {
-		this.setScheduler(scheduler);
+		super(scheduler);
 	}
 
 	@Override

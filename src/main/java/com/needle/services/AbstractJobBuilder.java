@@ -33,6 +33,10 @@ public abstract class AbstractJobBuilder {
 	private Scheduler scheduler = null;
 
 	private static final String JOB_NAME_PREFIX = "JOB_"; // Task name prefix
+	
+	protected AbstractJobBuilder(Scheduler scheduler) {
+		this.setScheduler(scheduler);
+	}
 
 	/**
 	 * This needs to be called by the class extending this class
@@ -41,6 +45,15 @@ public abstract class AbstractJobBuilder {
 	 */
 	protected void setScheduler(Scheduler scheduler) {
 		this.scheduler = scheduler;
+	}
+
+	/**
+	 * Check if the scheduler is initialized
+	 */
+	private void failOnNullScheduler() {
+		if (null == this.scheduler) {
+			throw new RuntimeException("Scheduler wans't initalized");
+		}
 	}
 
 	/**
@@ -131,6 +144,8 @@ public abstract class AbstractJobBuilder {
 	@SneakyThrows
 	private JobDetail scheduleJob(Class<? extends Job> jobClass, String groupName, String jobName, JobDataMap dataMap,
 			Trigger trigger) {
+		failOnNullScheduler();
+
 		jobName = String.format("%s%s", JOB_NAME_PREFIX, jobName);
 		log.info("Create task with name: {}", jobName);
 
@@ -167,6 +182,8 @@ public abstract class AbstractJobBuilder {
 	 */
 	@SneakyThrows
 	protected boolean deleteJob(String name, String group) {
+		failOnNullScheduler();
+
 		JobKey jobKey = new JobKey(name, group);
 		JobDetail jobDetail = scheduler.getJobDetail(jobKey);
 
@@ -187,6 +204,8 @@ public abstract class AbstractJobBuilder {
 	 */
 	@SneakyThrows
 	protected boolean modifyJob(String name, String group, String time) {
+		failOnNullScheduler();
+
 		Date date = null;
 		TriggerKey triggerKey = new TriggerKey(name, group);
 		CronTrigger cronTrigger = (CronTrigger) scheduler.getTrigger(triggerKey);
@@ -212,6 +231,8 @@ public abstract class AbstractJobBuilder {
 	 */
 	@SneakyThrows
 	protected TriggerState getJobState(String name, String group) {
+		failOnNullScheduler();
+
 		TriggerKey triggerKey = TriggerKey.triggerKey(name, group);
 		return scheduler.getTriggerState(triggerKey);
 	}
@@ -224,6 +245,7 @@ public abstract class AbstractJobBuilder {
 	 */
 	@SneakyThrows
 	protected TriggerState getJobState(TriggerKey triggerKey) {
+		failOnNullScheduler();
 		return scheduler.getTriggerState(triggerKey);
 	}
 
@@ -232,6 +254,7 @@ public abstract class AbstractJobBuilder {
 	 */
 	@SneakyThrows
 	protected void pauseAllJob() {
+		failOnNullScheduler();
 		scheduler.pauseAll();
 	}
 
@@ -243,6 +266,8 @@ public abstract class AbstractJobBuilder {
 	 */
 	@SneakyThrows
 	protected void pauseJob(String name, String group) {
+		failOnNullScheduler();
+
 		JobKey jobKey = new JobKey(name, group);
 		JobDetail jobDetail = scheduler.getJobDetail(jobKey);
 
@@ -258,6 +283,7 @@ public abstract class AbstractJobBuilder {
 	 */
 	@SneakyThrows
 	protected void resumeAllJob() {
+		failOnNullScheduler();
 		scheduler.resumeAll();
 	}
 
@@ -269,6 +295,8 @@ public abstract class AbstractJobBuilder {
 	 */
 	@SneakyThrows
 	protected void resumeJob(String name, String group) {
+		failOnNullScheduler();
+
 		JobKey jobKey = new JobKey(name, group);
 		JobDetail jobDetail = scheduler.getJobDetail(jobKey);
 		if (jobDetail == null) {
@@ -284,6 +312,8 @@ public abstract class AbstractJobBuilder {
 	 */
 	@SneakyThrows
 	protected void addJobListener(JobListener listener) {
+		failOnNullScheduler();
+
 		scheduler.getListenerManager().addJobListener(listener);
 	}
 
@@ -296,6 +326,8 @@ public abstract class AbstractJobBuilder {
 	 */
 	@SneakyThrows
 	protected void addJobListener(String name, Class<? extends Job> jobClass, JobListener listener) {
+		failOnNullScheduler();
+
 		name = String.format("%s%s", JOB_NAME_PREFIX, name);
 
 		String group = jobClass.getSimpleName();
@@ -314,6 +346,8 @@ public abstract class AbstractJobBuilder {
 	 */
 	@SneakyThrows
 	protected void addJobListenerByGroup(Class<? extends Job> jobClass, JobListener listener) {
+		failOnNullScheduler();
+
 		String group = jobClass.getSimpleName();
 		Matcher<JobKey> matcher = GroupMatcher.groupEquals(group);
 		scheduler.getListenerManager().addJobListener(listener, matcher);
@@ -326,6 +360,8 @@ public abstract class AbstractJobBuilder {
 	 */
 	@SneakyThrows
 	protected void addTriggerListener(TriggerListener listener) {
+		failOnNullScheduler();
+
 		scheduler.getListenerManager().addTriggerListener(listener);
 	}
 
@@ -337,6 +373,8 @@ public abstract class AbstractJobBuilder {
 	 */
 	@SneakyThrows
 	protected long getRunningJobCountByGroup(Class<? extends Job> jobClass) {
+		failOnNullScheduler();
+
 		String groupName = jobClass.getSimpleName();
 		GroupMatcher<JobKey> matcher = GroupMatcher.jobGroupEquals(groupName);
 		Set<JobKey> jobKeySet = scheduler.getJobKeys(matcher);
