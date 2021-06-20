@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.needle.dtos.email.BaseResponse;
 import com.needle.dtos.message.MessageRequest;
-import com.needle.service.MessageSchedulerService;
+import com.needle.services.MessageSchedulerService;
 
 @RestController
 @RequestMapping("messages")

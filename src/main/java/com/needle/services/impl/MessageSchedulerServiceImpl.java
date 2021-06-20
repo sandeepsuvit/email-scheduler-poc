@@ -1,19 +1,16 @@
-package com.needle.service.impl;
+package com.needle.services.impl;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.UUID;
 
-import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,17 +18,19 @@ import org.springframework.stereotype.Service;
 import com.needle.dtos.email.BaseResponse;
 import com.needle.dtos.message.MessageRequest;
 import com.needle.entities.Message;
-import com.needle.job.MessageSchedulerJob;
-import com.needle.repository.MessageRepository;
-import com.needle.service.MessageSchedulerService;
+import com.needle.jobs.MessageSchedulerJob;
+import com.needle.repositories.MessageRepository;
+import com.needle.services.MessageSchedulerService;
+import com.needle.utils.CommonConstants;
+import com.needle.utils.JobBuilderUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class MessageSchedulerServiceImpl implements MessageSchedulerService {
-	private static final String JOB_GROUP = "message-group";
-	private static final String TRIGGER_GROUP = "message-triggers";
+	private static final String JOB_GROUP = "message-job-group";
+	private static final String TRIGGER_GROUP = "message-trigger-group";
 
 	@Autowired
 	private MessageRepository messageRepository;
@@ -41,7 +40,7 @@ public class MessageSchedulerServiceImpl implements MessageSchedulerService {
 
 	@Override
 	public BaseResponse schedule(MessageRequest request) throws SchedulerException {
-		log.info("Entering method {} from class {}", "schedule", this.getClass().getName());
+		log.info(CommonConstants.LOGS.ENTRY, "schedule", this.getClass().getName());
 
 		Message message = new Message();
 		message.setContent(request.getContent());
@@ -53,10 +52,11 @@ public class MessageSchedulerServiceImpl implements MessageSchedulerService {
 
 		JobDetail jobDetail = buildJobDetail(request, message.getId());
 		Trigger trigger = buildJobTrigger(jobDetail, message.getMakeVisibleAt());
-		
+
 		scheduler.scheduleJob(jobDetail, trigger);
+
+		log.info(CommonConstants.LOGS.EXIT, "schedule", this.getClass().getName());
 		
-		log.info("Exiting method {} from class {}", "schedule", this.getClass().getName());
 		// @formatter:off
         return BaseResponse.builder()
         		.success(true)
@@ -69,7 +69,7 @@ public class MessageSchedulerServiceImpl implements MessageSchedulerService {
 
 	@Override
 	public BaseResponse unschedule(UUID messageId) throws SchedulerException {
-		log.info("Entering method {} from class {}", "unschedule", this.getClass().getName());
+		log.info(CommonConstants.LOGS.ENTRY, "unschedule", this.getClass().getName());
 
 		Message message = messageRepository.findById(messageId)
 				.orElseThrow(() -> new RuntimeException("Unable to find the message"));
@@ -87,7 +87,8 @@ public class MessageSchedulerServiceImpl implements MessageSchedulerService {
 		scheduler.deleteJob(jobKey);
 		scheduler.unscheduleJob(triggerKey);
 
-		log.info("Exiting method {} from class {}", "unschedule", this.getClass().getName());
+		log.info(CommonConstants.LOGS.EXIT, "unschedule", this.getClass().getName());
+		
 		// @formatter:off
         return BaseResponse.builder()
         		.success(true)
@@ -112,14 +113,7 @@ public class MessageSchedulerServiceImpl implements MessageSchedulerService {
 		jobDataMap.put("messageId", messageId);
 		jobDataMap.put("content", request.getContent());
 
-		// @formatter:off
-		return JobBuilder.newJob(MessageSchedulerJob.class)
-				.withIdentity(messageId.toString(), JOB_GROUP)
-				.withDescription("Send Message Job")
-				.usingJobData(jobDataMap)
-//                .storeDurably() // Store the reference of the job in db
-				.build();
-		// @formatter:on
+		return JobBuilderUtils.buildJobDetail(MessageSchedulerJob.class, jobDataMap, JOB_GROUP, "Send Message Job");
 	}
 
 	/**
@@ -133,18 +127,8 @@ public class MessageSchedulerServiceImpl implements MessageSchedulerService {
 	 * @return
 	 */
 	private Trigger buildJobTrigger(JobDetail jobDetail, LocalDateTime startAt) {
-		// @formatter:off
-		return TriggerBuilder.newTrigger()
-                .forJob(jobDetail)
-                .withIdentity(jobDetail.getKey().getName(), TRIGGER_GROUP)
-                .withDescription("Send Message Trigger")
-                .startAt(getStartAt(startAt)) // When to start the trigger
-                .withSchedule(
-                		SimpleScheduleBuilder
-                			.simpleSchedule()
-                			.withMisfireHandlingInstructionFireNow()) // Schedule to run the trigger
-                .build();
-		// @formatter:on
+		return JobBuilderUtils.buildTriggerThatTriggerOnce(jobDetail, TRIGGER_GROUP, "Send Message Trigger",
+				getStartAt(startAt));
 	}
 
 	/**

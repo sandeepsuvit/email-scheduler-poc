@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.needle.dtos.email.EmailRequest;
+import com.needle.services.EmailSchedulerService;
 import com.needle.dtos.email.BaseResponse;
-import com.needle.service.EmailSchedulerService;
 
 @RestController
 @RequestMapping("emails")

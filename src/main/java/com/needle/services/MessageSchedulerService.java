@@ -1,4 +1,4 @@
-package com.needle.service;
+package com.needle.services;
 
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package com.needle.job;
+package com.needle.jobs;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -12,7 +12,7 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
 
 import com.needle.entities.Message;
-import com.needle.repository.MessageRepository;
+import com.needle.repositories.MessageRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
