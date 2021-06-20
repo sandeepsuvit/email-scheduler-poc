@@ -26,6 +26,7 @@ The following guides illustrate how to use some features concretely:
 * https://www.callicoder.com/spring-boot-quartz-scheduler-email-scheduling-example/
 * https://www.tutorialsbuddy.com/quartz-with-spring-boot-and-mysql-example
 * https://www.baeldung.com/spring-quartz-schedule
+* https://www.fatalerrors.org/a/basic-use-of-quartz.html
 * https://medium.com/@ChamithKodikara/spring-boot-2-quartz-2-scheduler-integration-a8eaaf850805
 
 ### Usage

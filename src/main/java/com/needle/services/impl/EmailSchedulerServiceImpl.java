@@ -2,38 +2,38 @@ package com.needle.services.impl;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.UUID;
 
-import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
+import org.quartz.impl.matchers.KeyMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.needle.dtos.email.BaseResponse;
 import com.needle.dtos.email.EmailRequest;
 import com.needle.jobs.EmaillSchedulerJob;
+import com.needle.jobs.listeners.EmailJobListener;
 import com.needle.services.EmailSchedulerService;
-import com.needle.dtos.email.BaseResponse;
+import com.needle.utils.CommonConstants;
+import com.needle.utils.JobBuilderUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class EmailSchedulerServiceImpl implements EmailSchedulerService {
-	private static final String JOB_GROUP = "email-group";
-	private static final String TRIGGER_GROUP = "email-triggers";
+	private static final String JOB_GROUP = "email-job-group";
+	private static final String TRIGGER_GROUP = "email-trigger-group";
 
 	@Autowired
 	private Scheduler scheduler;
 
 	@Override
 	public BaseResponse schedule(EmailRequest request) throws SchedulerException {
-		log.info("Entering method {} from class {}", "schedule", this.getClass().getName());
+		log.info(CommonConstants.LOGS.ENTRY, "schedule", this.getClass().getName());
 		// Get the delivery time
 		ZonedDateTime deliveryTime = ZonedDateTime.of(request.getDeliverOn(), request.getTimeZone());
 
@@ -51,9 +51,17 @@ public class EmailSchedulerServiceImpl implements EmailSchedulerService {
 		JobDetail jobDetail = buildJobDetail(request);
 		Trigger trigger = buildJobTrigger(jobDetail, deliveryTime);
 
+		// Listener attached to jobKey
+		scheduler.getListenerManager().addJobListener(new EmailJobListener(), KeyMatcher.keyEquals(jobDetail.getKey()));
+
+		// Listener attached to group named "email-group" only.
+		// scheduler.getListenerManager().addJobListener(new EmailJobListener(),
+		// GroupMatcher.jobGroupEquals(JOB_GROUP));
+
 		scheduler.scheduleJob(jobDetail, trigger);
 
-		log.info("Exiting method {} from class {}", "schedule", this.getClass().getName());
+		log.info(CommonConstants.LOGS.EXIT, "schedule", this.getClass().getName());
+		
 		// @formatter:off
         return BaseResponse.builder()
         		.success(true)
@@ -79,14 +87,7 @@ public class EmailSchedulerServiceImpl implements EmailSchedulerService {
 		jobDataMap.put("subject", request.getSubject());
 		jobDataMap.put("body", request.getBody());
 
-		// @formatter:off
-		return JobBuilder.newJob(EmaillSchedulerJob.class)
-				.withIdentity(UUID.randomUUID().toString(), JOB_GROUP)
-				.withDescription("Send Email Job")
-				.usingJobData(jobDataMap)
-                .storeDurably() // Store the reference of the job in db
-				.build();
-		// @formatter:on
+		return JobBuilderUtils.buildJobDetail(EmaillSchedulerJob.class, jobDataMap, JOB_GROUP, "Send Email Job", true);
 	}
 
 	/**
@@ -100,18 +101,8 @@ public class EmailSchedulerServiceImpl implements EmailSchedulerService {
 	 * @return
 	 */
 	private Trigger buildJobTrigger(JobDetail jobDetail, ZonedDateTime startAt) {
-		// @formatter:off
-		return TriggerBuilder.newTrigger()
-                .forJob(jobDetail)
-                .withIdentity(jobDetail.getKey().getName(), TRIGGER_GROUP)
-                .withDescription("Send Email Trigger")
-                .startAt(Date.from(startAt.toInstant())) // When to start the trigger
-                .withSchedule(
-                		SimpleScheduleBuilder
-                			.simpleSchedule()
-                			.withMisfireHandlingInstructionFireNow()) // Schedule to run the trigger
-                .build();
-		// @formatter:on
+		return JobBuilderUtils.buildTriggerThatTriggerOnce(jobDetail, TRIGGER_GROUP, "Send Email Trigger",
+				Date.from(startAt.toInstant()));
 	}
 
 }
