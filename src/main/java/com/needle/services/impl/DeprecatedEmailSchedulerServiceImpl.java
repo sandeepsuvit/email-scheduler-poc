@@ -10,7 +10,6 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.impl.matchers.KeyMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.needle.dtos.email.BaseResponse;
 import com.needle.dtos.email.EmailRequest;
@@ -22,9 +21,10 @@ import com.needle.utils.JobBuilderUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
+@Deprecated(forRemoval = true)
 @Slf4j
-@Service
-public class EmailSchedulerServiceImpl implements EmailSchedulerService {
+//@Service
+public class DeprecatedEmailSchedulerServiceImpl implements EmailSchedulerService {
 	private static final String JOB_GROUP = "email-job-group";
 	private static final String TRIGGER_GROUP = "email-trigger-group";
 
